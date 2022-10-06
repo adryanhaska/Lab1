@@ -1,0 +1,121 @@
+{% extends 'base.html' %} {% block meta %}
+<script>
+  $(document).ready(function () {
+    $.get("/wishlist/json/", function (data, status) {
+      let content = `
+                <tr class="table-header">
+                    <th>Nama Barang</th>
+                    <th>Harga Barang</th>
+                    <th>Deskripsi</th>
+                </tr>
+            `;
+      for (let i = 0; i < data.length; i++) {
+        content += `
+                    <tr class="table-body">
+                        <td>${data[i].fields.nama_barang}</td>
+                        <td>${data[i].fields.harga_barang}</td>
+                        <td>${data[i].fields.deskripsi}</td>
+                    </tr>
+                `;
+      }
+      $(".content").html(content);
+    });
+  });
+</script>
+
+{% endblock meta %} {% block content %}
+
+<nav class="navbar bg-light">
+  <form class="container-fluid">
+    <a class="navbar-brand">{{nama}}</a>
+    <button class="btn btn-outline-danger" type="button">
+      <a
+        href="{% url 'wishlist:logout' %}"
+        style="text-decoration: none; color: inherit"
+        >Logout</a
+      >
+    </button>
+  </form>
+</nav>
+
+<div
+  class="login d-flex flex-column justify-content-center align-items-center"
+  style="padding: 20px"
+>
+  <h1>Create</h1>
+
+  <form
+    method="POST"
+    action=""
+    id="form"
+    class="d-flex flex-column justify-content-center"
+  >
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="exampleInputNama" class="form-label">Nama Barang</label>
+      <input
+        type="text"
+        name="nama_barang"
+        placeholder="Nama Barang"
+        class="form-control nama-barang"
+        style="width: 350px"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="exampleInputHarga" class="form-label">Harga Barang</label>
+      <input
+        type="number"
+        class="form-control harga-barang"
+        name="harga_barang"
+        placeholder="Harga Barang"
+        style="width: 350px"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="exampleInputDeskripsi" class="form-label">Deskripsi</label>
+      <input
+        type="teks"
+        class="form-control deskripsi"
+        name="deskripsi"
+        placeholder="Deskripsi"
+        style="width: 350px"
+      />
+    </div>
+    <button
+      type="submit"
+      class="submit btn login_btn btn-primary"
+      value="submit"
+    >
+      Submit
+    </button>
+  </form>
+</div>
+<br />
+<br />
+<br />
+
+<table class="table table-hove content "></table>
+<br />
+<br />
+
+<div class="navbar">
+  <a style="padding: 20px">Sesi terakhir login: {{ last_login }}</a>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $(".submit").click(function () {
+      let namaBarang = $(".nama-barang").val();
+      let hargaBarang = $(".harga-barang").val();
+      let deskripsi = $(".deskripsi").val();
+      let CSRFtoken = $('input[name="csrfmiddlewaretoken"]').val();
+      $.post("/wishlist/ajax/submit/", {
+        nama_barang: namaBarang,
+        harga_barang: hargaBarang,
+        deskripsi: deskripsi,
+        csrfmiddlewaretoken: CSRFtoken,
+      });
+    });
+  });
+</script>
+{% endblock content %}
